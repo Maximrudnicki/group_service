@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package group;
+
+option go_package = "group_service/proto";
+
+message AddStudentRequest {
+    string token = 1;
+    string group_id = 2;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "group_service/proto";
+
+import "get_user_id.proto";
+
+service AuthenticationService {
+    rpc GetUserId(TokenRequest) returns (UserIdResponse);
+}

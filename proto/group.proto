@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package group;
+
+option go_package = "group_service/proto";
+
+import "add_student.proto";
+import "create_group.proto";
+import "delete_group.proto";
+import "find_group.proto";
+import "remove_student.proto";
+import "google/protobuf/empty.proto";
+
+service GroupService {
+    rpc AddStudent(AddStudentRequest) returns (google.protobuf.Empty);
+    rpc CreateGroup(CreateGroupRequest) returns (google.protobuf.Empty);
+    rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty);
+    rpc FindGroup(FindGroupRequest) returns (GroupResponse);
+    rpc FindGroupsTeacher(FindGroupsTeacherRequest) returns (stream GroupResponse);
+    rpc FindGroupsStudent(FindGroupsStudentRequest) returns (stream GroupResponse);
+    rpc RemoveStudent(RemoveStudentRequest) returns (google.protobuf.Empty);
+}
