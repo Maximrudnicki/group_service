@@ -20,7 +20,7 @@ func (g *GroupRepositoryImpl) AddStudent(ctx context.Context, userId uint32, gro
 	if err != nil {
 		return errors.New("cannot parse group ID")
 	}
-
+	
 	filter := bson.M{"_id": oid}
 	update := bson.M{"$addToSet": bson.M{"students": userId}}
 
@@ -38,6 +38,7 @@ func (g *GroupRepositoryImpl) AddStudent(ctx context.Context, userId uint32, gro
 
 // CreateGroup implements GroupRepository.
 func (g *GroupRepositoryImpl) CreateGroup(ctx context.Context, group model.Group) error {
+	group.Students = []uint32{} // if the list of students is not initialized, we cannot add students to it
 	_, err := g.collection.InsertOne(ctx, group)
 	if err != nil {
 		return errors.New("cannot create group")
@@ -76,7 +77,7 @@ func (g *GroupRepositoryImpl) FindById(ctx context.Context, groupId string) (mod
 
 	res := g.collection.FindOne(ctx, filter)
 	if err := res.Decode(&data); err != nil {
-		return data, errors.New("cannot find blog with specified ID")
+		return data, errors.New("cannot find group with specified ID")
 	}
 
 	return data, nil
@@ -176,7 +177,7 @@ func (g *GroupRepositoryImpl) RemoveStudent(ctx context.Context, userId uint32, 
 	update := bson.M{"$pull": bson.M{"students": userId}}
 	res, err := g.collection.UpdateOne(ctx, bson.M{"_id": group.Id}, update)
 	if err != nil {
-		return errors.New("cannot delete group")
+		return errors.New("cannot remove student")
 	}
 
 	if res.ModifiedCount == 0 {

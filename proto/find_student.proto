@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package group;
+
+option go_package = "group_service/proto";
+
+message FindStudentRequest {
+    string token = 1;
+    uint32 student_id = 2;
+    string group_id = 3;
+}
+
+message StudentResponse {
+    string email = 1;
+    string username = 2;
+}

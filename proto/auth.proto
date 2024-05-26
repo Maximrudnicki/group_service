@@ -5,7 +5,9 @@ package auth;
 option go_package = "group_service/proto";
 
 import "get_user_id.proto";
+import "find_user.proto";
 
 service AuthenticationService {
     rpc GetUserId(TokenRequest) returns (UserIdResponse);
+    rpc FindUser(FindUserRequest) returns (UserResponse);
 }

@@ -8,15 +8,32 @@ import "add_student.proto";
 import "create_group.proto";
 import "delete_group.proto";
 import "find_group.proto";
+import "find_student.proto";
 import "remove_student.proto";
+import "statistics_requests.proto";
 import "google/protobuf/empty.proto";
+
+message AddWordToUserRequest {
+    string word = 1;
+    string definition = 2;
+    string group_id = 3;
+    uint32 user_id = 4;
+    string token = 5;
+}
+
+message AddWordToUserResponse {
+    uint32 word_id = 1;
+}
 
 service GroupService {
     rpc AddStudent(AddStudentRequest) returns (google.protobuf.Empty);
+    rpc AddWordToUser(AddWordToUserRequest) returns (AddWordToUserResponse);
     rpc CreateGroup(CreateGroupRequest) returns (google.protobuf.Empty);
     rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty);
+    rpc FindStudent(FindStudentRequest) returns (StudentResponse);
     rpc FindGroup(FindGroupRequest) returns (GroupResponse);
     rpc FindGroupsTeacher(FindGroupsTeacherRequest) returns (stream GroupResponse);
     rpc FindGroupsStudent(FindGroupsStudentRequest) returns (stream GroupResponse);
     rpc RemoveStudent(RemoveStudentRequest) returns (google.protobuf.Empty);
+    rpc GetStatistics(GetStatisticsRequest) returns (StatisticsResponse);
 }

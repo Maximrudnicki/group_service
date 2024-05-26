@@ -15,11 +15,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-var collection *mongo.Collection
-
 type Server struct {
 	pb.GroupServiceServer
-	GroupRepository repository.GroupRepository
+	GroupRepository      repository.GroupRepository
+	StatisticsRepository repository.StatisticsRepository
 }
 
 func main() {
@@ -27,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal("🚀 Could not load environment variables", err)
 	}
-	
+
 	mc := fmt.Sprintf("mongodb://%s:%s", loadConfig.MONGODB_HOST, loadConfig.MONGODB_PORT) // "mongodb://localhost:27017"
 
 	clientOptions := options.Client().ApplyURI(mc)
@@ -37,10 +36,12 @@ func main() {
 		log.Println("Error connecting:", err)
 	}
 
-	collection = client.Database(loadConfig.MONGODB_DB).Collection("groups")
+	groupCollection := client.Database(loadConfig.MONGODB_DB).Collection("groups")
+	statisticsCollection := client.Database(loadConfig.MONGODB_DB).Collection("statistics")
 
 	//Init Repository
-	groupRepository := repository.NewGroupRepositoryImpl(collection)
+	groupRepository := repository.NewGroupRepositoryImpl(groupCollection)
+	statisticsRepository := repository.NewStatisticsRepositoryImpl(statisticsCollection)
 
 	lis, err := net.Listen("tcp", loadConfig.GRPCPort)
 	if err != nil {
@@ -53,7 +54,10 @@ func main() {
 
 	s := grpc.NewServer(opts...)
 
-	pb.RegisterGroupServiceServer(s, &Server{GroupRepository: groupRepository})
+	pb.RegisterGroupServiceServer(s, &Server{
+		GroupRepository: groupRepository, 
+		StatisticsRepository: statisticsRepository,
+	})
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v\n", err)

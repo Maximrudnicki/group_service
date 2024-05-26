@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package group;
+
+option go_package = "group_service/proto";
+
+
+message GetStatisticsRequest {
+    uint32 student_id = 1;
+    string group_id = 2;
+    string token = 3;
+}
+
+message StatisticsResponse {
+    string stat_id = 1;
+    string group_id = 2;
+    uint32 teacher_id = 3;
+    uint32 student_id = 4;
+    repeated uint32 words = 5;
+}

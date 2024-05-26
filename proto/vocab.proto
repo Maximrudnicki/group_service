@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package vocab;
+
+option go_package = "group_service/proto";
+
+import "add_word_to_student.proto";
+
+service VocabService {
+    rpc AddWordToStudent(AddWordToStudentRequest) returns (AddWordToStudentResponse);
+}

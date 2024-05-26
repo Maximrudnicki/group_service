@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vocab;
+
+option go_package = "group_service/proto";
+
+message AddWordToStudentRequest {
+    string word = 1;
+    string definition = 2;
+    uint32 user_id = 3;
+}
+
+message AddWordToStudentResponse {
+    uint32 word_id = 1;
+}
