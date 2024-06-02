@@ -80,7 +80,7 @@ func (s *StatisticsRepositoryImpl) GetStatistics(ctx context.Context, statId str
 }
 
 // GetStatistics implements StatisticsRepository.
-func (s *StatisticsRepositoryImpl) GetId(ctx context.Context, groupId string, teacherId uint32, studentId uint32) (string, error) {
+func (s *StatisticsRepositoryImpl) GetId(ctx context.Context, groupId string, studentId uint32) (string, error) {
 	oid, err := primitive.ObjectIDFromHex(groupId)
 	if err != nil {
 		return "", errors.New("cannot parse group ID")
@@ -88,7 +88,6 @@ func (s *StatisticsRepositoryImpl) GetId(ctx context.Context, groupId string, te
 
 	filter := bson.M{
 		"group_id":  oid,
-		"teacher_id": teacherId,
 		"student_id": studentId,
 	}
 

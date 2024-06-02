@@ -9,6 +9,7 @@ import "create_group.proto";
 import "delete_group.proto";
 import "find_group.proto";
 import "find_student.proto";
+import "find_teacher.proto";
 import "remove_student.proto";
 import "statistics_requests.proto";
 import "google/protobuf/empty.proto";
@@ -31,6 +32,7 @@ service GroupService {
     rpc CreateGroup(CreateGroupRequest) returns (google.protobuf.Empty);
     rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty);
     rpc FindStudent(FindStudentRequest) returns (StudentResponse);
+    rpc FindTeacher(FindTeacherRequest) returns (TeacherResponse);
     rpc FindGroup(FindGroupRequest) returns (GroupResponse);
     rpc FindGroupsTeacher(FindGroupsTeacherRequest) returns (stream GroupResponse);
     rpc FindGroupsStudent(FindGroupsStudentRequest) returns (stream GroupResponse);

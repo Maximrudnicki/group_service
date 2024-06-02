@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func FindUser(studentId uint32) (*pb.UserResponse, error) {
+func FindUser(userId uint32) (*pb.UserResponse, error) {
 	// connect to auth_service as a client
 	conn, err := grpc.Dial("0.0.0.0:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -21,7 +21,7 @@ func FindUser(studentId uint32) (*pb.UserResponse, error) {
 	c := pb.NewAuthenticationServiceClient(conn)
 
 	req := &pb.FindUserRequest{
-		StudentId: studentId,
+		UserId: userId,
 	}
 
 	res, err := c.FindUser(context.Background(), req)

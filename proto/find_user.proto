@@ -5,7 +5,7 @@ package auth;
 option go_package = "group_service/proto";
 
 message FindUserRequest {
-    uint32 student_id = 1;
+    uint32 user_id = 1;
 }
 
 message UserResponse {

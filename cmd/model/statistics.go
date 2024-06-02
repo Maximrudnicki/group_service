@@ -10,4 +10,5 @@ type Statistics struct {
 	TeacherId uint32             `bson:"teacher_id"`
 	StudentId uint32             `bson:"student_id"`
 	Words     []uint32           `bson:"words"`
+	// Exercises []primitive.ObjectID `bson:"exercises"`
 }

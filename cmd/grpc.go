@@ -65,7 +65,7 @@ func (s *Server) AddWordToUser(ctx context.Context, in *pb.AddWordToUserRequest)
 		if err != nil {
 			return nil, err
 		}
-		statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, teacherId, in.UserId)
+		statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, in.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -160,6 +160,7 @@ func (s *Server) FindGroup(ctx context.Context, in *pb.FindGroupRequest) (*pb.Gr
 		}
 
 		gr := &pb.GroupResponse{
+			UserId:   userId,
 			GroupId:  in.GroupId,
 			Title:    group.Title,
 			Students: group.Students,
@@ -207,6 +208,44 @@ func (s *Server) FindStudent(ctx context.Context, in *pb.FindStudentRequest) (*p
 	}
 }
 
+func (s *Server) FindTeacher(ctx context.Context, in *pb.FindTeacherRequest) (*pb.TeacherResponse, error) {
+	userId, err := u.GetUserIdFromToken(in.Token)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Internal error: %v", err),
+		)
+	}
+	
+	group, err := s.GroupRepository.FindById(ctx, in.GroupId)
+	if err != nil {
+		return nil, err
+	}
+	
+	IsStudent := s.GroupRepository.IsStudent(ctx, userId, in.GroupId)
+	
+	if IsStudent {
+		teacher, err := u.FindUser(group.TeacherId)
+		if err != nil {
+			return nil, status.Errorf(
+				codes.Internal,
+				fmt.Sprintf("Internal error: %v", err),
+			)
+		}
+
+		return &pb.TeacherResponse{
+			TeacherId: group.TeacherId,
+			Email:     teacher.Email,
+			Username:  teacher.Username,
+		}, nil
+	} else {
+		return nil, status.Errorf(
+			codes.PermissionDenied,
+			"You are not allowed",
+		)
+	}
+}
+
 func (s *Server) FindGroupsTeacher(in *pb.FindGroupsTeacherRequest, stream pb.GroupService_FindGroupsTeacherServer) error {
 	userId, err := u.GetUserIdFromToken(in.Token)
 	if err != nil {
@@ -223,6 +262,7 @@ func (s *Server) FindGroupsTeacher(in *pb.FindGroupsTeacherRequest, stream pb.Gr
 
 	for _, teacher_group := range teacher_groups {
 		stream_err := stream.Send(&pb.GroupResponse{
+			UserId:   userId,
 			GroupId:  teacher_group.Id.Hex(),
 			Title:    teacher_group.Title,
 			Students: teacher_group.Students,
@@ -251,6 +291,7 @@ func (s *Server) FindGroupsStudent(in *pb.FindGroupsStudentRequest, stream pb.Gr
 
 	for _, group := range groups {
 		stream_err := stream.Send(&pb.GroupResponse{
+			UserId:   userId,
 			GroupId:  group.Id.Hex(),
 			Title:    group.Title,
 			Students: group.Students,
@@ -275,8 +316,8 @@ func (s *Server) GetStatistics(ctx context.Context, in *pb.GetStatisticsRequest)
 	IsStudent := s.GroupRepository.IsStudent(ctx, userId, in.GroupId)
 	IsTeacher := s.GroupRepository.IsTeacher(ctx, userId, in.GroupId)
 
-	if IsTeacher || IsStudent {
-		statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, userId, in.StudentId)
+	if IsStudent || IsTeacher {
+		statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, in.StudentId)
 		if err != nil {
 			return nil, err
 		}
@@ -314,7 +355,7 @@ func (s *Server) RemoveStudent(ctx context.Context, in *pb.RemoveStudentRequest)
 	if IsTeacher := s.GroupRepository.IsTeacher(ctx, userId, in.GroupId); IsTeacher {
 		err = s.GroupRepository.RemoveStudent(ctx, in.UserId, in.GroupId)
 		if err != nil {
-			statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, userId, in.UserId)
+			statId, err := s.StatisticsRepository.GetId(ctx, in.GroupId, in.UserId)
 			if err != nil {
 				return nil, err
 			}

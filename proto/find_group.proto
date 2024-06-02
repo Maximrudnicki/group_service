@@ -18,7 +18,8 @@ message FindGroupsStudentRequest {
 }
 
 message GroupResponse {
-    string group_id = 1;
-    string title = 2;
-    repeated uint32 students = 3;
+    uint32 user_id = 1;
+    string group_id = 2;
+    string title = 3;
+    repeated uint32 students = 4;
 }
