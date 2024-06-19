@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"group_service/cmd/config"
 	pb "group_service/proto"
 
 	"google.golang.org/grpc"
@@ -11,7 +12,11 @@ import (
 )
 
 func AddWordToStudent(studentId uint32, word string, definition string) (*pb.AddWordToStudentResponse, error) {
-	conn, err := grpc.Dial("0.0.0.0:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	loadConfig, err := config.LoadConfig(".")
+	if err != nil {
+		log.Fatal("🚀 Could not load environment variables", err)
+	}
+	conn, err := grpc.Dial(loadConfig.VOCAB_SERVICE, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Did not connect: %v", err)
 		return nil, err

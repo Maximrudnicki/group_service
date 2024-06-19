@@ -9,6 +9,8 @@ type Config struct {
 	MONGODB_DB   string `mapstructure:"MONGODB_DB"`
 	MONGODB_PORT string `mapstructure:"MONGODB_PORT"`
 	GRPCPort     string `mapstructure:"GRPC_PORT"`
+	AUTH_SERVICE  string `mapstructure:"AUTH_SERVICE"`
+	VOCAB_SERVICE string `mapstructure:"VOCAB_SERVICE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
